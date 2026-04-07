@@ -21,8 +21,7 @@ $(KERNEL_BIN):
 
 iso: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(ISO_KERNEL)
-	genisoimage -R -b boot/grub/stage2_eltorito -no-emul-boot \
-		-boot-load-size 4 -boot-info-table -o os.iso $(ISO_DIR)
+	grub-mkrescue -d src/iso/boot/grub/ -o os.iso $(ISO_DIR)
 
 run: iso
 	qemu-system-x86_64 -cdrom os.iso
