@@ -125,7 +125,6 @@ enable_paging:
     ret
 
 error:
-    mov [0xb8000], 0x4128
     mov dword [0xb8000], 0x4f524f45
     mov dword [0xb8004], 0x4f3a4f52
     mov byte  [0xb8008], al
