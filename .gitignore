@@ -4,4 +4,4 @@ src/iso/boot/kernel.elf
 src/boot/kernel.elf
 src/os.iso
 roadmap.md
-os.iso
+*.iso
