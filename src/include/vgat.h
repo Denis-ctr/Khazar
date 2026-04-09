@@ -14,6 +14,12 @@ int cursor_get();
 // memorye bit yazdirmaq
 void set_char_in_memory(char character, int32_t offset);
 
-void vga_write();
+//printf funksiyasi
+void putstr(int8_t *string);
+
+//komekci functionlar
+int32_t get_row(int32_t offset);
+int32_t get_offset(int32_t col, int32_t row);
+int32_t move_newl(int32_t offset);
 
 #endif
