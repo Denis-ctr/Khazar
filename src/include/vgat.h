@@ -22,4 +22,11 @@ int32_t get_row(int32_t offset);
 int32_t get_offset(int32_t col, int32_t row);
 int32_t move_newl(int32_t offset);
 
+void memorycpy(int8_t *source,int8_t *dest,int32_t nbyte); //newline ucun memorye copy edir bu function
+
+int32_t scrolln(int32_t offset); // bu ise ekrani scroll edib yuxari kocurur
+
+//ekrani clear edir
+void clear();
+
 #endif

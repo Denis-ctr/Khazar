@@ -3,5 +3,6 @@
 
 
 void kernel_main() {
-    
+    clear();
+    putstr("Khazar OS kernel");
 }

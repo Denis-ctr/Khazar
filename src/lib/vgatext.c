@@ -37,7 +37,7 @@ int cursor_get() //cursorun memory adressini tapiriq
 }
 
 
-#define ADRESS 0xb8000
+#define ADRESS ((uintptr_t)0xb8000)
 #define MAX_ROW 25
 #define MAX_COL 80
 #define WHITE_BLACK 0x0f
@@ -67,18 +67,57 @@ int32_t move_newl(int32_t offset)
     return get_offset(0, get_row(offset) + 1);
 }
 
+// Scrolling and memory copy functions
+
+void memorycpy(int8_t *source,int8_t *dest, int32_t nbyte)
+{
+    int32_t i;
+    for (i = 0; i < nbyte; i++) 
+    {
+        *(dest + i) = *(source + i);  //yeni eslinde 0x1000den 0x2000e bit kocurur tm?
+    }
+}  /*We can implement the row movement by copying a chunk of the video memory.
+First, we will write a function that copies a given number of bytes nbytes in memory from *source to *dest.*/
+
+int32_t scrolln(int32_t offset)
+{
+    memorycpy( 
+        (int8_t *) (ADRESS + get_offset(0, 1)),
+        (int8_t *) (get_offset(0, 0) + ADRESS),
+        MAX_COL * (MAX_ROW - 1) * 2   
+    );
+
+    for (int32_t col = 0; col < MAX_ROW; col++) 
+    {
+        set_char_in_memory(' ', get_offset(col, MAX_ROW - 1)); //linei temizleyirik ve bosluqla doldururuq lineyi
+    }
+
+    return offset - 2 * MAX_COL;
+
+    // bu funksiya terminal ve ya konsole ekranini yuxari kocurur
+
+    /*
+    Scrolldan əvvəl:        Scrolldan sonra:
+┌──────────────┐        ┌──────────────┐
+│  setir 1     │        │  setir 2     │  ← yuxarı çıxdı
+│  setir 2     │  ───►  │  setir 3     │
+│  setir 3     │        │              │  ← cleaned
+└──────────────┘        └──────────────┘
+    */
+}
+
 
 //alternative of printf in vga text
 
 void putstr(int8_t *string) 
 {
     int32_t offset = cursor_get(); //cursorun oldugu yeri gotururuk offsete veririy
-    int i = 0;
+    int32_t i = 0;
     while (string[i] !=0 ) 
     {
-        if (string[i] == '\n') {
-            move_newl(offset);
-        } 
+        if (offset >= MAX_ROW * MAX_COL * 2) {
+            offset = scrolln(offset);
+        }
         else {
         set_char_in_memory(string[i], offset);
         offset += 2;
@@ -88,16 +127,12 @@ void putstr(int8_t *string)
     cursor_set(offset); //sonda da cursorun yerini set edirik
 }
 
-
-// Scrolling and memory copy functions
-
-void memorycpy(int8_t *source,int8_t *dest, int32_t nbyte)
+void clear()
 {
-    int i;
-    for (i = 0; i < nbyte; i++) 
+    int32_t i;
+    for (i = 0;i < MAX_COL * MAX_ROW; i++)
     {
-        *(dest + 1) = *(source + 1);
+        set_char_in_memory(' ',i * 2);
     }
+    cursor_set(get_offset(0, 0));
 }
-
-
