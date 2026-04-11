@@ -1,6 +1,6 @@
 CC      = gcc
 NASM    = nasm
-CFLAGS  = -m64 -ffreestanding -mcmodel=kernel -mno-red-zone -fno-pic -fno-PIC -fno-pie -fno-stack-protector
+CFLAGS  = -m64 -ffreestanding -mcmodel=kernel -mno-red-zone -fno-pic -fno-PIC -fno-pie -fno-stack-protector -mgeneral-regs-only
 
 # Fayl yolları
 KERNEL_BIN = src/build/kernel.bin
@@ -13,11 +13,13 @@ $(KERNEL_BIN):
 	mkdir -p src/build
 	$(NASM) -f elf64 src/boot/loader.s -o src/build/loader.o
 	$(CC) $(CFLAGS) -c src/kernel/kernel.c -o src/build/kernel.o
+	$(CC) $(CFLAGS) -c src/lib/idt.c -o src/build/idt.o
 	$(CC) $(CFLAGS) -c src/lib/vgatext.c      -o src/build/vgatext.o
 	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld \
 		src/build/loader.o \
 		src/build/kernel.o \
-		src/build/vgatext.o
+		src/build/vgatext.o \
+		src/build/idt.o
 
 iso: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(ISO_KERNEL)

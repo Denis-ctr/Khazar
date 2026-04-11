@@ -106,7 +106,6 @@ int32_t scrolln(int32_t offset)
     */
 }
 
-
 //alternative of printf in vga text
 
 void putstr(int8_t *string) 
@@ -136,3 +135,4 @@ void clear()
     }
     cursor_set(get_offset(0, 0));
 }
+
