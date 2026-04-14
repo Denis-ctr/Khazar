@@ -1,6 +1,5 @@
 #ifndef VGA_H
 #define VGA_H
-
 #include "typint.h"
 
 // hardware terefden input output

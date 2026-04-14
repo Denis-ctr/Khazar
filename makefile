@@ -14,13 +14,15 @@ $(KERNEL_BIN):
 	$(NASM) -f elf64 src/boot/loader.s -o src/build/loader.o
 	$(CC) $(CFLAGS) -c src/kernel/kernel.c -o src/build/kernel.o
 	$(CC) $(CFLAGS) -c src/lib/idt.c -o src/build/idt.o
+	$(CC) $(CFLAGS) -c src/lib/io.c -o src/build/io.o
 	$(CC) $(CFLAGS) -c src/lib/vgatext.c      -o src/build/vgatext.o
 	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld \
 		src/build/loader.o \
 		src/build/kernel.o \
 		src/build/vgatext.o \
-		src/build/idt.o
-
+		src/build/idt.o \
+		src/build/io.o
+		
 iso: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(ISO_KERNEL)
 	grub-mkrescue -d src/iso/boot/grub/ -o os.iso $(ISO_DIR)

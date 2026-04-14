@@ -1,17 +1,6 @@
 #include "../include/typint.h"
 #include "../include/vgat.h"
 
-//prot byte input output
-
-uint8_t byte_i(uint16_t port) {
-    uint8_t result;
-    __asm__ volatile ("in %%dx, %%al" : "=a" (result) : "d" (port)); // qaqas men burda gotururem port deyisenini DX registrine yukleyirem DXdeki unvani ALye yerlesdirirem ALdaki neticeni result deyisenine yaziram
-    return result;
-}
-
-void byte_o(uint16_t port, uint8_t data) {
-    __asm__ volatile ("out %%al, %%dx" : : "a" (data), "d" (port)); // qaqas men burda ise data deyisenini AL registrine yukleyrem port deyisenini DX registrine yukleyrem sonra da ALdaki bayti DX unvanina gonderrem
-}
 
 #define VGA_CTRL_REGISTER 0x3d4 //vganin control registri
 #define VGA_DATA_REGISTER 0x3d5 //vganin data registri
@@ -33,7 +22,7 @@ int cursor_get() //cursorun memory adressini tapiriq
     int offset =byte_i(VGA_DATA_REGISTER) << 8;
     byte_o(VGA_CTRL_REGISTER, VGA_OFFSET_LOW);
     offset += byte_i(VGA_DATA_REGISTER);
-    return offset * 2; //burda da qaqas her sey 2 bit yer aldigi ucun ijiye vururuq yeni bele bisey
+    return offset * 2; //burda da qaqas her character 2 bit yer aldigi ucun ikiye vururuq yeni bele bisey
 }
 
 
@@ -48,6 +37,7 @@ void set_char_in_memory(char character, int32_t offset)
     vidmem[offset] = character;
     vidmem[offset + 1] = WHITE_BLACK;
 }           //bunla da sen goturub ekranin hansisa memory adressine erisim edib bit yazdira bilersen
+
 
 
 //Komekci Funksiyalar
@@ -72,7 +62,7 @@ int32_t move_newl(int32_t offset)
 void memorycpy(int8_t *source,int8_t *dest, int32_t nbyte)
 {
     int32_t i;
-    for (i = 0; i < nbyte; i++) 
+    for (i = 0; i < nbyte; i++)
     {
         *(dest + i) = *(source + i);  //yeni eslinde 0x1000den 0x2000e bit kocurur tm?
     }
@@ -81,13 +71,13 @@ First, we will write a function that copies a given number of bytes nbytes in me
 
 int32_t scrolln(int32_t offset)
 {
-    memorycpy( 
+    memorycpy(
         (int8_t *) (ADRESS + get_offset(0, 1)),
         (int8_t *) (get_offset(0, 0) + ADRESS),
-        MAX_COL * (MAX_ROW - 1) * 2   
+        MAX_COL * (MAX_ROW - 1) * 2
     );
 
-    for (int32_t col = 0; col < MAX_ROW; col++) 
+    for (int32_t col = 0; col < MAX_ROW; col++)
     {
         set_char_in_memory(' ', get_offset(col, MAX_ROW - 1)); //linei temizleyirik ve bosluqla doldururuq lineyi
     }
@@ -108,11 +98,11 @@ int32_t scrolln(int32_t offset)
 
 //alternative of printf in vga text
 
-void putstr(int8_t *string) 
+void putstr(int8_t *string)
 {
     int32_t offset = cursor_get(); //cursorun oldugu yeri gotururuk offsete veririy
     int32_t i = 0;
-    while (string[i] !=0 ) 
+    while (string[i] !=0 )
     {
         if (offset >= MAX_ROW * MAX_COL * 2) {
             offset = scrolln(offset);
@@ -135,4 +125,3 @@ void clear()
     }
     cursor_set(get_offset(0, 0));
 }
-
