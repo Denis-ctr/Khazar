@@ -5,6 +5,7 @@
 
 #define KERNEL_CS 0x08  //Kernel seqment terefi
 
+
 typedef struct {
     uint16_t low_offset;   // handler[0:15]
     uint16_t sel;          // KERNEL_CS = 0x08

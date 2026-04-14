@@ -5,5 +5,5 @@
 void kernel_main() {
     clear();
     idt_init();
-    putstr("Khazar OS kernel");
+    putstr("Kernel of Khazar");
 }
