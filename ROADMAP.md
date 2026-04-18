@@ -4,41 +4,41 @@
 
 ---
 
-## Mərhələ 1: CPU Kəsilmələri və Xətaları (Interrupts & Exceptions) - *Hazırkı hədəf*
+## Mərhələ 1: CPU Kəsilmələri və Xətaları (Interrupts & Exceptions) - _Hazırkı hədəf_
 
-Sistem hazırda 64-bit olaraq yüklənir (boot), GDT və IDT strukturları mövcuddur. Ancaq istənilən əsas xəta (məsələn: Sıfıra bölünmə - *Divide by Zero*) zamanı CPU qapanır. Bunun qarşısını almaq üçün:
+Sistem hazırda 64-bit olaraq yüklənir (boot), GDT və IDT strukturları mövcuddur. Ancaq istənilən əsas xəta (məsələn: Sıfıra bölünmə - _Divide by Zero_) zamanı CPU qapanır. Bunun qarşısını almaq üçün:
 
-*   **[x] ISR-lərin (Interrupt Service Routines) yazılması:** Assembly və C-ni birləşdirərək ilk 32 IDT girişini (Exceptions: Page Fault, Double Fault, General Protection Fault və s.) təyin etmək. Qeyd olunan səhvlər baş verdikdə ekranın yuxarı hissəsində xətanın adının və yaddaş ünvanının (registry dump) çıxarılması.
-*   **[ ] PIC (Programmable Interrupt Controller) Re-mapping:** Xarici qurğuların (Hardware) kəsilmələri ilə CPU daxili xətalarının toqquşmaması üçün İRQ (Interrupt Request) nömrələrini (Master və Slave PIC) 32-47 nömrəli slotlara sürüşdürmək.
+- **[x] ISR-lərin (Interrupt Service Routines) yazılması:** Assembly və C-ni birləşdirərək ilk 32 IDT girişini (Exceptions: Page Fault, Double Fault, General Protection Fault və s.) təyin etmək. Qeyd olunan səhvlər baş verdikdə ekranın yuxarı hissəsində xətanın adının və yaddaş ünvanının (registry dump) çıxarılması.
+- **[ ] PIC (Programmable Interrupt Controller) Re-mapping:** Xarici qurğuların (Hardware) kəsilmələri ilə CPU daxili xətalarının toqquşmaması üçün İRQ (Interrupt Request) nömrələrini (Master və Slave PIC) 32-47 nömrəli slotlara sürüşdürmək.
 
 ## Mərhələ 2: Baza Sürücüləri (Basic Drivers)
 
 Kəsilmələr aktiv və təhlükəsiz olduqdan sonra artıq xarici siqnallara cavab vermək olar:
 
-*   **[ ] Klaviatura Sürücüsü (PS/2):** İRQ1 kanalından qəbul edilən "scan code"-ları öyrənmək, onları `char` (ASCII) tipinə çevirib terminala məqalə və komandalar yazmağı planlamaq.
-*   **[ ] Timer (PIT - Programmable Interval Timer):** CPU-nun daxili idarəetməsini sabitləşdirmək üçün İRQ0 vasitəsi ilə "tick" intervalı yaratmaq. `sleep(ms)` və `get_time()` kimi vacib sistem funksiyaları üçün təməl atmaq.
+- **[ ] Klaviatura Sürücüsü (PS/2):** İRQ1 kanalından qəbul edilən "scan code"-ları öyrənmək, onları `char` (ASCII) tipinə çevirib terminala məqalə və komandalar yazmağı planlamaq.
+- **[ ] Timer (PIT - Programmable Interval Timer):** CPU-nun daxili idarəetməsini sabitləşdirmək üçün İRQ0 vasitəsi ilə "tick" intervalı yaratmaq. `sleep(ms)` və `get_time()` kimi vacib sistem funksiyaları üçün təməl atmaq.
 
 ## Mərhələ 3: Yaddaşın İdarə Olunması (Memory Management)
 
 Əməliyyat sisteminin ürəyi sayılan kompleks mərhələ:
 
-*   **[ ] Physical Memory Manager (PMM):** GRUB (Multiboot) məlumatlarından istifadə edərək RAM-da istifadəyə yararlı yaddaşları tapmaq və "Page Frame Allocator" vasitəsi ilə (məsələn, Bitmap ilə) səhifələrə (4KB) bölmək.
-*   **[ ] Virtual Memory Manager / Paging (VMM):** 64-bit Long Mode üçün "4-level Paging" sistemini tam qurmaq və virtual ünvanları fiziki ünvanlara mapping-ə başlamaq.
-*   **[ ] Heap Allocator (Dinamik Yaddaş):** Komponentlər üçün daxili yaddaş bölüşdürücüsü: `kmalloc()` və `kfree()` funksiyalarının yazılması.
+- **[ ] Physical Memory Manager (PMM):** GRUB (Multiboot) məlumatlarından istifadə edərək RAM-da istifadəyə yararlı yaddaşları tapmaq və "Page Frame Allocator" vasitəsi ilə (məsələn, Bitmap ilə) səhifələrə (4KB) bölmək.
+- **[ ] Virtual Memory Manager / Paging (VMM):** 64-bit Long Mode üçün "4-level Paging" sistemini tam qurmaq və virtual ünvanları fiziki ünvanlara mapping-ə başlamaq.
+- **[ ] Heap Allocator (Dinamik Yaddaş):** Komponentlər üçün daxili yaddaş bölüşdürücüsü: `kmalloc()` və `kfree()` funksiyalarının yazılması.
 
 ## Mərhələ 4: Çoxtapşırıqlılıq və İstifadəçi Proqramları (Multitasking & User Space)
 
 Khazar OS sisteminin proqram təminatı işlədə bilməsi üçün mühit yaratmaq:
 
-*   **[ ] Task Mühiti və Context Switching:** PIT vasitəsi ilə saniyədə yüz dəfə qısa dondurmalar edərək registr və stack dəyişməklə proseslər arası paylanmış iş rejimi yaratmaq (Multithreading/Multitasking).
-*   **[ ] User Mode (Ring 3):** Ring 0-dan (Kernel) aşağı imtiyazlı Ring 3-ə təhlükəsiz keçmək.
-*   **[ ] Sistem Çağırışları (Syscalls):** İstifadəçinin proseslərinin (proqramlarının) ekran, klaviatura və RAM istəyini Kernel-ə "Syscall" ilə etməsini təmin etmək.
+- **[ ] Task Mühiti və Context Switching:** PIT vasitəsi ilə saniyədə yüz dəfə qısa dondurmalar edərək registr və stack dəyişməklə proseslər arası paylanmış iş rejimi yaratmaq (Multithreading/Multitasking).
+- **[ ] User Mode (Ring 3):** Ring 0-dan (Kernel) aşağı imtiyazlı Ring 3-ə təhlükəsiz keçmək.
+- **[ ] Sistem Çağırışları (Syscalls):** İstifadəçinin proseslərinin (proqramlarının) ekran, klaviatura və RAM istəyini Kernel-ə "Syscall" ilə etməsini təmin etmək.
 
 ## Mərhələ 5: Fayl Sistemi (File Systems & Storage)
 
-*   **[ ] PCI Əlaqəsi (PCI Bus scanning):** Ana kart daxilindəki qurğuları axtaracaq və avadanlığı tapacaq kodun (driver API) qurulması.
-*   **[ ] Mass Storage (Disk sürücüləri):** ATA (IDE) və ya SATA (AHCI) yaddaş qurğularının disk sektorlarının oxunub-yazılması.
-*   **[ ] Virtual File System (VFS) & İlkin Format:** Kernel-in fayl strukturunu tanımasına kömək üçün öncə VFS abstraksiyası yaratmaq, daha sonra `FAT32` və ya ext2 formatlarını quraşdırmaq.
+- **[ ] PCI Əlaqəsi (PCI Bus scanning):** Ana kart daxilindəki qurğuları axtaracaq və avadanlığı tapacaq kodun (driver API) qurulması.
+- **[ ] Mass Storage (Disk sürücüləri):** ATA (IDE) və ya SATA (AHCI) yaddaş qurğularının disk sektorlarının oxunub-yazılması.
+- **[ ] Virtual File System (VFS) & İlkin Format:** Kernel-in fayl strukturunu tanımasına kömək üçün öncə VFS abstraksiyası yaratmaq, daha sonra `FAT32` və ya ext2 formatlarını quraşdırmaq.
 
 ---
 

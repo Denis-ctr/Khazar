@@ -9,6 +9,6 @@
 
 uint8_t byte_i(uint16_t port);
 
-void byte_o(uint16_t port, uint8_t data); 
+void byte_o(uint16_t port, uint8_t data);
 
 #endif

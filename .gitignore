@@ -5,3 +5,4 @@ src/boot/kernel.elf
 src/os.iso
 roadmap.md
 *.iso
+ARCH.md
