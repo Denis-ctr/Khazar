@@ -1,4 +1,3 @@
-#include "../include/isr.h"
 #include "../include/typint.h"
 #include "../include/vgat.h"
 
