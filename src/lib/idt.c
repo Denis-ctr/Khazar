@@ -1,5 +1,6 @@
 #include "../include/idt.h"
 #include "../include/typint.h"
+#include <cstdio>
 
 idtent_t idt[IDT_ENTRIES]; // 256liq bir massiv
 

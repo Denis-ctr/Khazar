@@ -15,6 +15,7 @@ void set_char_in_memory(char character, int32_t offset);
 
 //printf funksiyasi
 void putstr(int8_t *string);
+void puthex(uint64_t n);
 
 //komekci functionlar
 int32_t get_row(int32_t offset);

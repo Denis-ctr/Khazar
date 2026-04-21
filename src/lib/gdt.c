@@ -8,8 +8,6 @@ static void gdt_set_gate(uint32_t, uint32_t, uint32_t, uint8_t, uint8_t);
 
 gdtent_t gdt_entries[5];
 gdtptr_t gdt_ptr;
-idtent_t idt_entries[256];
-idtptr_t idt_ptr;
 
 void init_gdt() {
   gdt_ptr.limit = sizeof(gdt_entries) - 1;

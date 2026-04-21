@@ -125,3 +125,15 @@ void clear()
     }
     cursor_set(get_offset(0, 0));
 }
+
+void puthex(uint64_t n) {
+  int8_t hex_chars[] = "0123456789ABCDEF";
+  int8_t buffer[19];
+  buffer[0] = '0';
+  buffer[1] = 'x';
+  for (int i = 0; i < 16; i++) {
+    buffer[17 - i] = hex_chars[(n >> (i * 4)) & 0xF];
+  }
+  buffer[18] = 0;
+  putstr(buffer);
+}
