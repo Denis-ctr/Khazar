@@ -1,3 +1,3 @@
 In Progress...
 
-I just making my own OS
+I just writing my own OS
