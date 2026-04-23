@@ -1,43 +1,46 @@
-CC      = gcc
-NASM    = nasm
-CFLAGS  = -m64 -ffreestanding -mcmodel=kernel -mno-red-zone -fno-pic -fno-PIC -fno-pie -fno-stack-protector -mgeneral-regs-only
+CC   = gcc
+NASM = nasm
 
-# Fayl yolları
-KERNEL_BIN = src/build/kernel.bin
+CFLAGS = -m64 -ffreestanding -mcmodel=kernel -mno-red-zone \
+         -fno-pic -fno-PIC -fno-pie -fno-stack-protector \
+         -mgeneral-regs-only \
+         -Isrc/include
+
+BUILD      = src/build
 ISO_DIR    = src/iso
+KERNEL_BIN = $(BUILD)/kernel.bin
 ISO_KERNEL = $(ISO_DIR)/boot/kernel.elf
 
-# Mənbə faylları
-SRCS = src/boot/loader.s \
+SRCS = src/boot/loader.s   \
        src/kernel/kernel.c \
-       src/lib/idt.c \
-       src/lib/gdt.s \
-       src/lib/gdt.c \
-       src/lib/io.c \
-       src/lib/vgatext.c \
-       src/lib/isr.c
+       src/cpu/idt.c       \
+       src/cpu/gdt.s       \
+       src/cpu/gdt.c       \
+       src/drivers/io.c    \
+       src/drivers/vga.c   \
+       src/cpu/isr.c
 
 all: iso
 
 $(KERNEL_BIN): $(SRCS) src/boot/link.ld
-	mkdir -p src/build
-	$(NASM) -f elf64 src/boot/loader.s -o src/build/loader.o
-	$(CC) $(CFLAGS) -c src/kernel/kernel.c -o src/build/kernel.o
-	$(CC) $(CFLAGS) -c src/lib/idt.c -o src/build/idt.o
-	$(NASM) -f elf64 src/lib/gdt.s -o src/build/gdt_s.o
-	$(CC) $(CFLAGS) -c src/lib/gdt.c -o src/build/gdt.o
-	$(CC) $(CFLAGS) -c src/lib/io.c -o src/build/io.o
-	$(CC) $(CFLAGS) -c src/lib/vgatext.c -o src/build/vgatext.o
-	$(CC) $(CFLAGS) -c src/lib/isr.c -o src/build/isr.o
+	mkdir -p $(BUILD)
+	$(NASM) -f elf64 src/boot/loader.s       -o $(BUILD)/loader.o
+	$(CC)   $(CFLAGS) -c src/kernel/kernel.c  -o $(BUILD)/kernel.o
+	$(CC)   $(CFLAGS) -c src/cpu/idt.c        -o $(BUILD)/idt.o
+	$(NASM) -f elf64 src/cpu/gdt.s            -o $(BUILD)/gdt_s.o
+	$(CC)   $(CFLAGS) -c src/cpu/gdt.c        -o $(BUILD)/gdt.o
+	$(CC)   $(CFLAGS) -c src/drivers/io.c     -o $(BUILD)/io.o
+	$(CC)   $(CFLAGS) -c src/drivers/vga.c    -o $(BUILD)/vga.o
+	$(CC)   $(CFLAGS) -c src/cpu/isr.c        -o $(BUILD)/isr.o
 	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld \
-		src/build/loader.o \
-		src/build/kernel.o \
-		src/build/vgatext.o \
-		src/build/idt.o \
-		src/build/gdt_s.o \
-		src/build/gdt.o \
-		src/build/io.o \
-		src/build/isr.o
+		$(BUILD)/loader.o  \
+		$(BUILD)/kernel.o  \
+		$(BUILD)/vga.o     \
+		$(BUILD)/idt.o     \
+		$(BUILD)/gdt_s.o   \
+		$(BUILD)/gdt.o     \
+		$(BUILD)/io.o      \
+		$(BUILD)/isr.o
 
 iso: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(ISO_KERNEL)
@@ -47,5 +50,5 @@ run: iso
 	qemu-system-x86_64 -cdrom khazar.iso -display gtk
 
 clean:
-	rm -rf src/build
+	rm -rf $(BUILD)
 	rm -f khazar.iso

@@ -1,11 +1,11 @@
 #ifndef IO_H
 #define IO_H
 #include "typint.h"
-#include "vgat.h"
+#include "vga.h"
 
-//io funcs
+// io funcs
 
-//prot byte input output
+// prot byte input output
 
 uint8_t byte_i(uint16_t port);
 

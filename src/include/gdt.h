@@ -1,5 +1,5 @@
 #include "typint.h"
-#include "vgat.h"
+#include "vga.h"
 
 struct gdt_entries {
   uint16_t limit_low;  // The lower 16 bits of the limit.
