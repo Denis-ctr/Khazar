@@ -29,15 +29,15 @@ void isr_handler(registers_t *regs) {
 }
 
 void irq_handler(registers_t *regs) {
-  // EOI (End of Interrupt) siqnalı göndər
+  // EOI signali
   if (regs->int_no >= 40) {
-    // Slave PIC-dən gəlib → Slave-ə də göndər
+
     byte_o(0xA0, 0x20);
   }
-  // Hər zaman Master-a göndər
+  // full master
   byte_o(0x20, 0x20);
 
-  // Əgər bu kəsmə üçün xüsusi işləyici varsa, çağır
+  // kesme ucun isleyici varsa call edir
   if (interrupt_handlers[regs->int_no] != 0) {
     isr_t handler = interrupt_handlers[regs->int_no];
     handler(regs);

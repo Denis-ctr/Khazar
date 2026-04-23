@@ -51,7 +51,7 @@ int32_t move_newl(int32_t offset) { return get_offset(0, get_row(offset) + 1); }
 
 // Scrolling and memory copy functions
 
-void memorycpy(char *source, char *dest, int32_t nbyte) {
+void memorycpy(int8_t *source, int8_t *dest, int32_t nbyte) {
   int32_t i;
   for (i = 0; i < nbyte; i++) {
     *(dest + i) =
@@ -62,8 +62,8 @@ First, we will write a function that copies a given number of bytes nbytes in
 memory from *source to *dest.*/
 
 int32_t scrolln(int32_t offset) {
-  memorycpy((char *)(ADRESS + get_offset(0, 1)),
-            (char *)(get_offset(0, 0) + ADRESS), MAX_COL * (MAX_ROW - 1) * 2);
+  memorycpy((int8_t *)(ADRESS + get_offset(0, 1)),
+            (int8_t *)(get_offset(0, 0) + ADRESS), MAX_COL * (MAX_ROW - 1) * 2);
 
   for (int32_t col = 0; col < MAX_COL; col++) {
     set_char_in_memory(
@@ -88,7 +88,7 @@ int32_t scrolln(int32_t offset) {
 
 // alternative of printf in vga text
 
-void putstr(char *string) {
+void putstr(int8_t *string) {
   int32_t offset =
       cursor_get(); // cursorun oldugu yeri gotururuk offsete veririy
   int32_t i = 0;
@@ -116,8 +116,8 @@ void clear() {
 }
 
 void puthex(uint64_t n) {
-  char hex_chars[] = "0123456789ABCDEF";
-  char buffer[19];
+  int8_t hex_chars[] = "0123456789ABCDEF";
+  int8_t buffer[19];
   buffer[0] = '0';
   buffer[1] = 'x';
   for (int i = 0; i < 16; i++) {
