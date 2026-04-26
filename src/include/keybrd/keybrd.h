@@ -5,6 +5,6 @@
 #include "../typint.h"
 
 void print_letter(uint8_t scancode);
-void init_keyboard();
+void init_keyboard(); // initializing kyboard
 
 #endif
