@@ -18,7 +18,8 @@ SRCS = src/boot/loader.s   \
        src/cpu/gdt.c       \
        src/drivers/io.c    \
        src/drivers/vga.c   \
-       src/cpu/isr.c
+       src/cpu/isr.c       \
+       src/drivers/keybrd/keybrd.c
 
 all: iso
 
@@ -32,6 +33,8 @@ $(KERNEL_BIN): $(SRCS) src/boot/link.ld
 	$(CC)   $(CFLAGS) -c src/drivers/io.c     -o $(BUILD)/io.o
 	$(CC)   $(CFLAGS) -c src/drivers/vga.c    -o $(BUILD)/vga.o
 	$(CC)   $(CFLAGS) -c src/cpu/isr.c        -o $(BUILD)/isr.o
+	$(CC)    $(CFLAGS) -c src/drivers/keybrd/keybrd.c   -o $(BUILD)/keybrd.o
+
 	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld \
 		$(BUILD)/loader.o  \
 		$(BUILD)/kernel.o  \
@@ -40,7 +43,8 @@ $(KERNEL_BIN): $(SRCS) src/boot/link.ld
 		$(BUILD)/gdt_s.o   \
 		$(BUILD)/gdt.o     \
 		$(BUILD)/io.o      \
-		$(BUILD)/isr.o
+		$(BUILD)/isr.o     \
+		$(BUILD)/keybrd.o
 
 iso: $(KERNEL_BIN)
 	cp $(KERNEL_BIN) $(ISO_KERNEL)

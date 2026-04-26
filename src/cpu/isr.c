@@ -23,7 +23,7 @@ void register_interrupt_handler(uint8_t n, isr_t handler) {
 }
 
 void isr_handler(registers_t *regs) {
-  putstr("Exception: ");
+  putstr("[ ERROR ] ");
   puthex(regs->int_no);
   putstr("\n");
 }

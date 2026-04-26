@@ -1,5 +1,4 @@
 #include "../include/vga.h"
-#include "../include/typint.h"
 
 #define VGA_CTRL_REGISTER 0x3d4 // vganin control registri
 #define VGA_DATA_REGISTER 0x3d5 // vganin data registri
@@ -30,7 +29,7 @@ int cursor_get() // cursorun memory adressini tapiriq
 #define MAX_COL 80
 #define WHITE_BLACK 0x0f
 
-void set_char_in_memory(char character, int32_t offset) {
+void set_char_in_memory(uint8_t character, int32_t offset) {
   uint8_t *vidmem = (uint8_t *)ADRESS;
   vidmem[offset] = character;
   vidmem[offset + 1] = WHITE_BLACK;
@@ -51,7 +50,7 @@ int32_t move_newl(int32_t offset) { return get_offset(0, get_row(offset) + 1); }
 
 // Scrolling and memory copy functions
 
-void memorycpy(int8_t *source, int8_t *dest, int32_t nbyte) {
+void memorycpy(uint8_t *source, uint8_t *dest, int32_t nbyte) {
   int32_t i;
   for (i = 0; i < nbyte; i++) {
     *(dest + i) =
@@ -62,8 +61,9 @@ First, we will write a function that copies a given number of bytes nbytes in
 memory from *source to *dest.*/
 
 int32_t scrolln(int32_t offset) {
-  memorycpy((int8_t *)(ADRESS + get_offset(0, 1)),
-            (int8_t *)(get_offset(0, 0) + ADRESS), MAX_COL * (MAX_ROW - 1) * 2);
+  memorycpy((uint8_t *)(ADRESS + get_offset(0, 1)),
+            (uint8_t *)(get_offset(0, 0) + ADRESS),
+            MAX_COL * (MAX_ROW - 1) * 2);
 
   for (int32_t col = 0; col < MAX_COL; col++) {
     set_char_in_memory(
@@ -88,7 +88,7 @@ int32_t scrolln(int32_t offset) {
 
 // alternative of printf in vga text
 
-void putstr(int8_t *string) {
+void putstr(string_const string) {
   int32_t offset =
       cursor_get(); // cursorun oldugu yeri gotururuk offsete veririy
   int32_t i = 0;
@@ -116,7 +116,7 @@ void clear() {
 }
 
 void puthex(uint64_t n) {
-  int8_t hex_chars[] = "0123456789ABCDEF";
+  string_const hex_chars = "0123456789ABCDEF";
   int8_t buffer[19];
   buffer[0] = '0';
   buffer[1] = 'x';
@@ -124,5 +124,5 @@ void puthex(uint64_t n) {
     buffer[17 - i] = hex_chars[(n >> (i * 4)) & 0xF];
   }
   buffer[18] = 0;
-  putstr(buffer);
+  putstr((string_const)buffer);
 }

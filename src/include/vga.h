@@ -11,10 +11,10 @@ void cursor_set(int offset);
 int cursor_get();
 
 // memorye bit yazdirmaq
-void set_char_in_memory(char character, int32_t offset);
+void set_char_in_memory(uint8_t character, int32_t offset);
 
 // printf funksiyasi
-void putstr(int8_t *string);
+void putstr(string_const string);
 void puthex(uint64_t n);
 
 // komekci functionlar
@@ -22,7 +22,7 @@ int32_t get_row(int32_t offset);
 int32_t get_offset(int32_t col, int32_t row);
 int32_t move_newl(int32_t offset);
 
-void memorycpy(int8_t *source, int8_t *dest,
+void memorycpy(uint8_t *source, uint8_t *dest,
                int32_t nbyte); // newline ucun memorye copy edir bu function
 
 int32_t scrolln(int32_t offset); // bu ise ekrani scroll edib yuxari kocurur

@@ -20,5 +20,7 @@ typedef unsigned int uint_fast32_t;
 typedef long long int_fast64_t;
 typedef unsigned long long uint_fast64_t;
 typedef unsigned long long uintptr_t;
+typedef char* string;
+typedef const char* string_const;
 
 #endif

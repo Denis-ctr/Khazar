@@ -3,6 +3,5 @@ src/build/*
 src/iso/boot/kernel.elf
 src/boot/kernel.elf
 src/os.iso
-ROADMAP.md
+DOCUMENTATION.md
 *.iso
-ARCH.md
