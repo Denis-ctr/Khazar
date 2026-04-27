@@ -126,3 +126,21 @@ void puthex(uint64_t n) {
   buffer[18] = 0;
   putstr((string_const)buffer);
 }
+
+void putdec(uint64_t n) {
+  int8_t buffer[11];
+  buffer[10] = 0;
+
+  if (n == 0) {
+    putstr("0");
+    return;
+  }
+  int i = 9;
+
+  while (n > 0) {
+    buffer[i] = '0' + (n % 10);
+    n = n / 10;
+    i--;
+  }
+}
+// putdec komandasi ededi ekrana yazzdirmaga komek edir
