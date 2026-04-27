@@ -13,6 +13,8 @@ void kernel_main() {
   asm volatile("sti");
   putstr("[ INFO ]  Installing ISRs\n");
   putstr("[ INFO ] Initializing Keyboard (IRQ1)\n");
+  // buralarda sleep functionu olacaq timer driveri daxil edenden sonra
+  clear();
   init_keyboard();
   putstr("Kernel of Khazar");
   while (1)
