@@ -18,7 +18,6 @@ void init_timer(uint32_t frequency) {
 
   uint8_t l = (uint8_t)(divisor & 0xFF);
   uint8_t h = (uint8_t)((divisor >> 8) & 0xFF);
-
   byte_o(0x40, l);
   byte_o(0x40, h);
 }
