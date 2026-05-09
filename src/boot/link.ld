@@ -18,5 +18,6 @@ SECTIONS {
     .bss ALIGN(4096) : {
         *(COMMON)
         *(.bss)
+	_kernel_end = .;
     }
 }

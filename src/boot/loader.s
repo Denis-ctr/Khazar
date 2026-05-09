@@ -2,7 +2,7 @@ global loader
 extern kernel_main
 
 MAGIC_NUMBER      equ 0x1BADB002
-FLAGS             equ 0x0
+FLAGS             equ (1 << 0) | (1 << 1) ; Yaddaş məlumatlarını da istəyirik
 CHECKSUM          equ -(MAGIC_NUMBER + FLAGS)
 KERNEL_STACK_SIZE equ 4096
 
@@ -15,9 +15,9 @@ kernel_stack: resb KERNEL_STACK_SIZE
 
 section .rodata
 gdt64:
-    dq 0
+    dq 0 ; null descriptor
 .code: equ $ - gdt64
-    dq (1<<43) | (1<<44) | (1<<47) | (1<<53)
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code descriptor
 .pointer:
     dw $ - gdt64 - 1
     dq gdt64
@@ -31,10 +31,16 @@ align 4
 
 loader:
     mov esp, kernel_stack + KERNEL_STACK_SIZE
+    
+    ; VACİB: ebx registrində gələn Multiboot ünvanını ebp-yə köçürürük.
+    ; Çünki aşağıdakı funksiyaların daxilindəki 'cpuid' ebx-i sıfırlayacaq.
+    mov ebp, ebx
+
     call check_cpuid
     call check_long_mode
     call setup_page_tables
     call enable_paging
+
     lgdt [gdt64.pointer]
     jmp gdt64.code:long_mode_start
 
@@ -72,34 +78,41 @@ check_long_mode:
 
 setup_page_tables:
     mov eax, p3_table
-    or eax, 0b11
+    or eax, 0b11 ; present + writable
     mov [p4_table], eax
 
     mov eax, p2_table
-    or eax, 0b11
+    or eax, 0b11 ; present + writable
     mov [p3_table], eax
 
     mov ecx, 0
 .loop:
-    mov eax, 0x200000
+    mov eax, 0x200000 ; 2MiB
     mul ecx
-    or eax, 0b10000011
+    or eax, 0b10000011 ; present + writable + huge page
     mov [p2_table + ecx*8], eax
     inc ecx
-    cmp ecx, 512
+    cmp ecx, 512 ; 1GiB mapping
     jne .loop
     ret
 
 enable_paging:
+    ; P4 cədvəlini CR3-ə yüklə
     mov eax, p4_table
     mov cr3, eax
+
+    ; PAE-ni aktivləşdir (CR4.PAE = 1)
     mov eax, cr4
     or eax, 1 << 5
     mov cr4, eax
+
+    ; Long Mode-u aktivləşdir (EFER MSR)
     mov ecx, 0xC0000080
     rdmsr
     or eax, 1 << 8
     wrmsr
+
+    ; Paging-i aktivləşdir (CR0.PG = 1)
     mov eax, cr0
     or eax, 1 << 31
     mov cr0, eax
@@ -113,14 +126,18 @@ error:
 
 bits 64
 long_mode_start:
+    ; Data seqmentlərini sıfırla
     mov ax, 0
     mov ss, ax
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
+
     mov rsp, kernel_stack + KERNEL_STACK_SIZE
-    mov edi, ebx
+    
+    ; İndi ebp-də qoruduğumuz Multiboot ünvanını kernel_main-ə (edi) veririk
+    mov edi, ebp
     call kernel_main
     hlt
 
