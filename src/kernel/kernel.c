@@ -26,7 +26,7 @@ void kernel_main(uint64_t multiboot_addr) {
   const char* logo = "Kernel of KhazarOS";
   int32_t offset = get_offset(28, 11);
   for (int i =0; logo[i] != '\0'; i++) {
-      sleep(150);
+      sleep(100);
       set_char_w_color(logo[i], COLOR_LIGHT_GREEN, offset);
       offset +=2;
   }
