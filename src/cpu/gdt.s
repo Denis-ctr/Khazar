@@ -14,7 +14,6 @@ gdt_flush:
    retfq
 .flush:
    ret
-
 ; --- Kəsilmələr üçün Makrolar ---
 %macro ISR_NOERRCODE 1
 global isr%1

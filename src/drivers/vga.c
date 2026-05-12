@@ -1,5 +1,6 @@
 
 #include "../include/vga.h"
+#include "../include/typint.h"
 
 #define VGA_CTRL_REGISTER 0x3d4 // vganin control registri
 #define VGA_DATA_REGISTER 0x3d5 // vganin data registri
@@ -24,7 +25,7 @@ int cursor_get() // cursorun memory adressini tapiriq
   return offset * 2; // burda da qaqas her character 2 bit yer aldigi ucun ikiye
                      // vururuq yeni bele bisey
 }
- 
+
 #define ADRESS ((uintptr_t)0xb8000)
 #define MAX_ROW 25
 #define MAX_COL 80
@@ -146,3 +147,12 @@ void putdec(uint64_t n) {
   }
 }
 // putdec komandasi ededi ekrana yazzdirmaga komek edir
+
+
+// ekrana rengli yazi yazdirmaq
+void set_char_w_color(uint8_t character, uint8_t color, int32_t offset)
+{
+    uint8_t *vidmem = (uint8_t*)ADRESS;
+    vidmem[offset] = character;
+    vidmem[offset+1] = color;
+}
