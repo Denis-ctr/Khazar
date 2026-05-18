@@ -19,6 +19,9 @@
 
 #include "typint.h"
 
+//rengli putstr
+void putstr_color(string_const string, uint8_t color);
+
 // ekrana rengli yazi yazdirmaq da
 void set_char_w_color(uint8_t character, uint8_t color, int32_t offset);
 

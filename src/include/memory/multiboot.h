@@ -14,7 +14,7 @@ typedef struct {
 } __attribute__((packed)) multiboot_entry_t;
 
 typedef struct {
-  uint32_t flags;     // hansı sahələrin dolu olduğunu göstərir
+  uint32_t flags;     // hansı sahelerin dolu olduğunu göstərir
   uint32_t mem_lower; // 640KB-dan aşağı RAM (KB ilə)
   uint32_t mem_upper; // 1MB-dan yuxarı RAM (KB ilə)
   uint32_t boot_device;

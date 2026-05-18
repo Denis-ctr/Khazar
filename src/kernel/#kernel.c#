@@ -12,22 +12,17 @@ void kernel_main(uint64_t multiboot_addr) {
   idt_init();
   init_keyboard();
   init_timer(100);
-
-  asm volatile("sti"); // interruptin ise dusmesi ucun
-  putstr_color("[ INFO ]", COLOR_LIGHT_GREEN);
-  putstr(" GDT Initialized\n");
+  asm volatile("sti");
+  putstr("[ INFO ] GDT Initialized\n");
   sleep(300);
-  putstr_color("[ INFO ]", COLOR_LIGHT_GREEN);
-  putstr(" IDT Initialized\n");
+  putstr("[ INFO ] IDT Initialized\n");
   sleep(300);
-  putstr_color("[ INFO ]", COLOR_LIGHT_GREEN);
-  putstr(" ISRs Initialized\n");
+  putstr("[ INFO ]  Installing ISRs\n");
   sleep(300);
-  putstr_color("[ INFO ]", COLOR_LIGHT_GREEN);
-  putstr(" IRQ1 [keyboard] Initialized\n");
-  sleep(1000);
+  putstr("[ INFO ] Initializing Keyboard (IRQ1)\n");
+  sleep(500);
   clear();
-
+  
   const char* logo = "Kernel of KhazarOS";
   int32_t offset = get_offset(28, 11);
   for (int i =0; logo[i] != '\0'; i++) {
@@ -39,7 +34,7 @@ void kernel_main(uint64_t multiboot_addr) {
 // qardas bu memorydir PMM ucun lazm olcaq
   multiboot_info_t *mb = (multiboot_info_t *)multiboot_addr;
   if (mb->flags & MULTIBOOT_FLAG_MAP) {
-    putstr("\n[ MEMORY ]\n");
+    putstr("\n[ memory ]\n");
     sleep(300);
     multiboot_entry_t *entry = (multiboot_entry_t *)((uint64_t)mb->mmap_addr);
     uint64_t end = (uint64_t)mb->mmap_addr + mb->mmap_length;

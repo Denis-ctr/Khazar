@@ -1,3 +1,4 @@
+
 CC   = gcc
 NASM = nasm
 
@@ -11,50 +12,41 @@ ISO_DIR    = src/iso
 KERNEL_BIN = $(BUILD)/kernel.bin
 ISO_KERNEL = $(ISO_DIR)/boot/kernel.elf
 
-SRCS = src/boot/loader.s   \
-       src/kernel/kernel.c \
-       src/cpu/idt.c       \
-       src/cpu/gdt.s       \
-       src/cpu/gdt.c       \
-       src/drivers/io.c    \
-       src/drivers/vga.c   \
-       src/cpu/isr.c       \
-       src/drivers/keybrd/keybrd.c \
-       src/drivers/pit/pit.c
+# Auto-detect all C and Assembly sources
+C_SRCS = $(shell find src -name '*.c')
+S_SRCS = $(shell find src -name '*.s')
+
+# Generate corresponding object file names
+OBJS = $(patsubst src/%.c, $(BUILD)/%.o, $(C_SRCS)) \
+       $(patsubst src/%.s, $(BUILD)/%.o, $(S_SRCS))
+
+# Ensure loader is linked first
+OBJS_NO_LOADER = $(filter-out $(BUILD)/boot/loader.o, $(OBJS))
+LINK_OBJS = $(BUILD)/boot/loader.o $(OBJS_NO_LOADER)
 
 all: iso
 
-$(KERNEL_BIN): $(SRCS) src/boot/link.ld
-	mkdir -p $(BUILD)
-	$(NASM) -f elf64 src/boot/loader.s       -o $(BUILD)/loader.o
-	$(CC)   $(CFLAGS) -c src/kernel/kernel.c  -o $(BUILD)/kernel.o
-	$(CC)   $(CFLAGS) -c src/cpu/idt.c        -o $(BUILD)/idt.o
-	$(NASM) -f elf64 src/cpu/gdt.s            -o $(BUILD)/gdt_s.o
-	$(CC)   $(CFLAGS) -c src/cpu/gdt.c        -o $(BUILD)/gdt.o
-	$(CC)   $(CFLAGS) -c src/drivers/io.c     -o $(BUILD)/io.o
-	$(CC)   $(CFLAGS) -c src/drivers/vga.c    -o $(BUILD)/vga.o
-	$(CC)   $(CFLAGS) -c src/cpu/isr.c        -o $(BUILD)/isr.o
-	$(CC)   $(CFLAGS) -c src/drivers/keybrd/keybrd.c   -o $(BUILD)/keybrd.o
-	$(CC)   $(CFLAGS) -c src/drivers/pit/pit.c  -o $(BUILD)/pit.o
+# Rule to compile C files
+$(BUILD)/%.o: src/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld \
-		$(BUILD)/loader.o  \
-		$(BUILD)/kernel.o  \
-		$(BUILD)/vga.o     \
-		$(BUILD)/idt.o     \
-		$(BUILD)/gdt_s.o   \
-		$(BUILD)/gdt.o     \
-		$(BUILD)/io.o      \
-		$(BUILD)/isr.o     \
-		$(BUILD)/keybrd.o  \
-		$(BUILD)/pit.o
+# Rule to compile Assembly files
+$(BUILD)/%.o: src/%.s
+	@mkdir -p $(dir $@)
+	$(NASM) -f elf64 $< -o $@
+
+$(KERNEL_BIN): $(OBJS) src/boot/link.ld
+	@mkdir -p $(BUILD)
+	ld -n -o $(KERNEL_BIN) -T src/boot/link.ld $(LINK_OBJS)
 
 iso: $(KERNEL_BIN)
+	@mkdir -p $(ISO_DIR)/boot/grub
 	cp $(KERNEL_BIN) $(ISO_KERNEL)
 	grub-mkrescue -o khazar.iso $(ISO_DIR)
 
 run: iso
-	qemu-system-x86_64 -cdrom khazar.iso -display gtk
+	qemu-system-x86_64 -cdrom khazar.iso -display sdl
 
 clean:
 	rm -rf $(BUILD)

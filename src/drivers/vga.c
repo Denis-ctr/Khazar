@@ -7,7 +7,6 @@
 #define VGA_OFFSET_LOW 0x0f
 #define VGA_OFFSET_HIGH 0x0e
 
-
 void cursor_set(int offset) // cursorun memory adressini setleyirik
 {
   offset /= 2;
@@ -30,7 +29,6 @@ int cursor_get() // cursorun memory adressini tapiriq
 #define MAX_ROW 25
 #define MAX_COL 80
 #define WHITE_BLACK 0x0f
-
 
 void set_char_in_memory(uint8_t character, int32_t offset) {
   uint8_t *vidmem = (uint8_t *)ADRESS;
@@ -110,6 +108,24 @@ void putstr(string_const string) {
   cursor_set(offset); // sonda da cursorun yerini set edirik
 }
 
+void putstr_color(string_const string, uint8_t color) {
+  int32_t offset = cursor_get();
+  int32_t i = 0;
+  while (string[i] != 0) {
+    if (string[i] == '\n') {
+      offset = move_newl(offset);
+    } else {
+      if (offset >= MAX_ROW * MAX_COL * 2) {
+        offset = scrolln(offset);
+      }
+      set_char_w_color(string[i], color, offset);
+      offset += 2;
+    }
+    i++;
+  }
+  cursor_set(offset);
+}
+
 void clear() {
   int32_t i;
   for (i = 0; i < MAX_COL * MAX_ROW; i++) {
@@ -148,11 +164,9 @@ void putdec(uint64_t n) {
 }
 // putdec komandasi ededi ekrana yazzdirmaga komek edir
 
-
 // ekrana rengli yazi yazdirmaq
-void set_char_w_color(uint8_t character, uint8_t color, int32_t offset)
-{
-    uint8_t *vidmem = (uint8_t*)ADRESS;
-    vidmem[offset] = character;
-    vidmem[offset+1] = color;
+void set_char_w_color(uint8_t character, uint8_t color, int32_t offset) {
+  uint8_t *vidmem = (uint8_t *)ADRESS;
+  vidmem[offset] = character;
+  vidmem[offset + 1] = color;
 }

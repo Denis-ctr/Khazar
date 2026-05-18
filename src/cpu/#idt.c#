@@ -19,7 +19,6 @@ void idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags) {
   idt[num].reserved = 
 extern void *isr_stub_table[]; // Assembly-dən gələn cədvəl
 
-
 static void pic_remap() {
   byte_o(0x20, 0x11);
   byte_o(0xA0, 0x11); // bunlar baslatmalardir byte gonddererek basladir
